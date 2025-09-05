@@ -11,7 +11,8 @@ executors:
 
   machine-executor:
     machine:
-      image: ubuntu-2204:2023.07.2
+      image: ubuntu-2204:current
+    resource_class: medium
     working_directory: ~/project
 
 jobs:
@@ -25,7 +26,10 @@ jobs:
             - maven-deps-v1-{{ checksum "pom.xml" }}
       - run:
           name: Download Dependencies
-          command: mvn dependency:go-offline
+          command: |
+            # 暂时注释掉Maven镜像配置，使用默认中央仓库
+            # mvn dependency:go-offline
+            mvn dependency:resolve
       - save_cache:
           paths:
             - ~/.m2
@@ -47,7 +51,9 @@ jobs:
             - maven-deps-v1-{{ checksum "pom.xml" }}
       - run:
           name: Build Application
-          command: mvn clean package -DskipTests
+          command: |
+            # 使用默认Maven仓库进行构建
+            mvn clean package -DskipTests
       - store_artifacts:
           path: target/*.jar
           destination: build-artifacts
