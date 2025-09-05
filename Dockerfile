@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjdk-rocky:17.0.15-cds
+FROM bellsoft/liberica-openjdk-rocky:17.0.16-cds
 
 WORKDIR /app
 
