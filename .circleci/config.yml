@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.12.5
+
 executors:
   java-executor:
     docker:
@@ -167,35 +170,6 @@ jobs:
           path: /tmp/monitoring
           destination: monitoring-logs
 
-  # 通知job (替代Slack orb)
-  notify-success:
-    executor: java-executor
-    steps:
-      - run:
-          name: Notify Success
-          command: |
-            echo "=== 部署成功通知 ==="
-            echo "项目: Food Information Backend"
-            echo "分支: $CIRCLE_BRANCH"
-            echo "提交: $CIRCLE_SHA1"
-            echo "构建: $CIRCLE_BUILD_NUM"
-            echo "时间: $(date)"
-            echo "状态: ✅ 部署成功"
-
-  notify-failure:
-    executor: java-executor
-    steps:
-      - run:
-          name: Notify Failure
-          command: |
-            echo "=== 部署失败通知 ==="
-            echo "项目: Food Information Backend"
-            echo "分支: $CIRCLE_BRANCH"
-            echo "提交: $CIRCLE_SHA1"
-            echo "构建: $CIRCLE_BUILD_NUM"
-            echo "时间: $(date)"
-            echo "状态: ❌ 部署失败"
-
 workflows:
   food-information-backend-pipeline:
     jobs:
@@ -237,21 +211,19 @@ workflows:
             branches:
               only: main
       
-      # 5. 成功通知
-      - notify-success:
+      # 5. Slack通知
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
           requires:
             - test-environment
           filters:
             branches:
               only: [develop, main]
       
-      # 6. 失败通知 (当任何job失败时)
-      - notify-failure:
-          requires:
-            - backend-test
-            - backend-build
-            - test-environment
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
           filters:
             branches:
               only: [develop, main]
-          when: on_fail
