@@ -3,7 +3,7 @@ FROM bellsoft/liberica-openjdk-rocky:17.0.16-cds
 WORKDIR /app
 
 # 安装必要工具
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN yum update -y && yum install -y curl && yum clean all
 
 # 复制应用JAR文件
 COPY target/*.jar app.jar
