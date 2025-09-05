@@ -1,4 +1,4 @@
-FROM openjdk:17-jre-slim
+FROM bellsoft/liberica-openjdk-rocky:17.0.15-cds
 
 WORKDIR /app
 
