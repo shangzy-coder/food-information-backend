@@ -29,7 +29,7 @@ jobs:
           command: |
             # 暂时注释掉Maven镜像配置，使用默认中央仓库
             # mvn dependency:go-offline
-            mvn dependency:resolve
+            mvn install
       - save_cache:
           paths:
             - ~/.m2
