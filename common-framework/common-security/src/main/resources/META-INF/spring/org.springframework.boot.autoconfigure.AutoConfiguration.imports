@@ -1,0 +1,2 @@
+org.sinobridge.common.security.handler.AllUrlHandler
+org.sinobridge.common.security.config.SecurityConfig

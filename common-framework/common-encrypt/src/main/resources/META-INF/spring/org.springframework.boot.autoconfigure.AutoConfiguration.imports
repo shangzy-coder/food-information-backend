@@ -1,0 +1,3 @@
+org.sinobridge.common.encrypt.config.EncryptorAutoConfiguration
+org.sinobridge.common.encrypt.config.ApiDecryptAutoConfiguration
+

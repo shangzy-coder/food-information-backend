@@ -1,0 +1,5 @@
+org.sinobridge.common.web.config.CaptchaConfig
+org.sinobridge.common.web.config.FilterConfig
+org.sinobridge.common.web.config.I18nConfig
+org.sinobridge.common.web.config.ResourcesConfig
+org.sinobridge.common.web.config.UndertowConfig
