@@ -170,43 +170,6 @@ jobs:
           path: /tmp/monitoring
           destination: monitoring-logs
 
-  # Slack通知job
-  notify-success:
-    executor: java-executor
-    steps:
-      - slack/notify:
-          event: pass
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "✅ *Food Information Backend* 部署成功！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM"
-                  }
-                }
-              ]
-            }
-
-  notify-failure:
-    executor: java-executor
-    steps:
-      - slack/notify:
-          event: fail
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "❌ *Food Information Backend* 部署失败！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM"
-                  }
-                }
-              ]
-            }
-
 workflows:
   food-information-backend-pipeline:
     jobs:
@@ -248,21 +211,45 @@ workflows:
             branches:
               only: main
       
-      # 5. 成功通知
-      - notify-success:
+      # 5. Slack通知 - 成功时
+      - slack/notify:
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "✅ *Food Information Backend* 部署成功！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM"
+                  }
+                }
+              ]
+            }
           requires:
             - test-environment
           filters:
             branches:
               only: [develop, main]
       
-      # 6. 失败通知
-      - notify-failure:
+      # 6. Slack通知 - 失败时
+      - slack/notify:
+          name: notify-failure
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "❌ *Food Information Backend* 部署失败！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM"
+                  }
+                }
+              ]
+            }
           requires:
             - backend-test
-            - backend-build
-            - test-environment
           filters:
             branches:
               only: [develop, main]
-          when: on_fail
