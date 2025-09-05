@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: food-db-prod
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-prod_password}
-      MYSQL_DATABASE: ${DB_NAME:-food_information}
-      MYSQL_USER: ${DB_USER:-food_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-prod_pass}
+      MYSQL_ROOT_PASSWORD: prod_password123
+      MYSQL_DATABASE: food_information
+      MYSQL_USER: food_user
+      MYSQL_PASSWORD: prod_pass123
     ports:
       - "3306:3306"
     volumes:
@@ -25,7 +25,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: food-redis-prod
-    command: redis-server --requirepass ${REDIS_PASSWORD:-prod_redis}
+    command: redis-server --requirepass prod_redis123
     ports:
       - "6379:6379"
     volumes:
@@ -46,14 +46,14 @@ services:
     container_name: food-backend-prod
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_HOST: ${DB_HOST:-database}
-      DB_PORT: ${DB_PORT:-3306}
-      DB_NAME: ${DB_NAME:-food_information}
-      DB_USER: ${DB_USER:-food_user}
-      DB_PASSWORD: ${DB_PASSWORD:-prod_pass}
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: food_information
+      DB_USER: food_user
+      DB_PASSWORD: prod_pass123
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-prod_redis}
+      REDIS_PASSWORD: prod_redis123
     ports:
       - "8080:8080"
     depends_on:
