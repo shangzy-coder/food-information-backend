@@ -211,9 +211,10 @@ workflows:
             branches:
               only: main
       
-      # 5. Slack通知 - 成功时
+      # 5. Slack通知 - 成功时 (修正版本)
       - slack/notify:
           event: pass
+          channel: $SLACK_DEFAULT_CHANNEL
           custom: |
             {
               "blocks": [
@@ -221,8 +222,21 @@ workflows:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "✅ *Food Information Backend* 部署成功！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM"
+                    "text": "✅ *Food Information Backend* 部署成功！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM\n*项目:* food-information-backend"
                   }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "查看构建"
+                      },
+                      "url": "$CIRCLE_BUILD_URL"
+                    }
+                  ]
                 }
               ]
             }
@@ -232,10 +246,11 @@ workflows:
             branches:
               only: [develop, main]
       
-      # 6. Slack通知 - 失败时
+      # 6. Slack通知 - 失败时 (修正版本)
       - slack/notify:
           name: notify-failure
           event: fail
+          channel: $SLACK_DEFAULT_CHANNEL
           custom: |
             {
               "blocks": [
@@ -243,8 +258,21 @@ workflows:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "❌ *Food Information Backend* 部署失败！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM"
+                    "text": "❌ *Food Information Backend* 部署失败！\n*分支:* $CIRCLE_BRANCH\n*提交:* $CIRCLE_SHA1\n*构建:* $CIRCLE_BUILD_NUM\n*项目:* food-information-backend"
                   }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "查看失败原因"
+                      },
+                      "url": "$CIRCLE_BUILD_URL"
+                    }
+                  ]
                 }
               ]
             }
