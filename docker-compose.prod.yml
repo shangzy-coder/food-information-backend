@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.0
+    container_name: food-db-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-prod_password}
+      MYSQL_DATABASE: ${DB_NAME:-food_information}
+      MYSQL_USER: ${DB_USER:-food_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-prod_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data_prod:/var/lib/mysql
+      - ./scripts/db/init:/docker-entrypoint-initdb.d
+    networks:
+      - food-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: food-redis-prod
+    command: redis-server --requirepass ${REDIS_PASSWORD:-prod_redis}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_prod:/data
+    networks:
+      - food-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: food-backend-prod
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: ${DB_HOST:-database}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-food_information}
+      DB_USER: ${DB_USER:-food_user}
+      DB_PASSWORD: ${DB_PASSWORD:-prod_pass}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-prod_redis}
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - food-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  db_data_prod:
+  redis_data_prod:
+
+networks:
+  food-network:
+    driver: bridge
